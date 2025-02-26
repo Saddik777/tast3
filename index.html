@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Chat List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 12px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button.delete {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Customer Chat List</h2>
+        <input type="text" id="name" placeholder="Customer Name">
+        <input type="text" id="contact" placeholder="Contact">
+        <button onclick="addCustomer()">Add Customer</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="customerList">
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", loadCustomers);
+
+        function addCustomer() {
+            let name = document.getElementById("name").value;
+            let contact = document.getElementById("contact").value;
+            
+            if (name === "" || contact === "") {
+                alert("Please enter both name and contact");
+                return;
+            }
+            
+            let table = document.getElementById("customerList");
+            let row = table.insertRow();
+            let cell1 = row.insertCell(0);
+            let cell2 = row.insertCell(1);
+            let cell3 = row.insertCell(2);
+            
+            cell1.innerHTML = name;
+            cell2.innerHTML = contact;
+            cell3.innerHTML = '<button class="delete" onclick="deleteRow(this)">Delete</button>';
+            
+            saveCustomer(name, contact);
+            document.getElementById("name").value = "";
+            document.getElementById("contact").value = "";
+        }
+        
+        function deleteRow(btn) {
+            let row = btn.parentNode.parentNode;
+            let name = row.cells[0].innerText;
+            row.parentNode.removeChild(row);
+            removeCustomer(name);
+        }
+        
+        function saveCustomer(name, contact) {
+            let customers = JSON.parse(localStorage.getItem("customers")) || [];
+            customers.push({ name, contact });
+            localStorage.setItem("customers", JSON.stringify(customers));
+        }
+        
+        function loadCustomers() {
+            let customers = JSON.parse(localStorage.getItem("customers")) || [];
+            let table = document.getElementById("customerList");
+            customers.forEach(customer => {
+                let row = table.insertRow();
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                let cell3 = row.insertCell(2);
+                
+                cell1.innerHTML = customer.name;
+                cell2.innerHTML = customer.contact;
+                cell3.innerHTML = '<button class="delete" onclick="deleteRow(this)">Delete</button>';
+            });
+        }
+        
+        function removeCustomer(name) {
+            let customers = JSON.parse(localStorage.getItem("customers")) || [];
+            customers = customers.filter(customer => customer.name !== name);
+            localStorage.setItem("customers", JSON.stringify(customers));
+        }
+    </script>
+</body>
+</html>
